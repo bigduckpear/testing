@@ -76,12 +76,61 @@ class(die)
 
 gender <- factor(c("male","female", "female", "male"))
 attributes(gender)
+
+gender
+
+unclass(gender)
+gender
+
+class(gender)
+gender
+
+color <- factor(c("red","blue", "orange", "red"))
+attributes(color)
+
+color
+
+unclass(color)
+color
+
+class(color)
+color
+
+
+
+# Factors make it easy to put categorical variables into a statistical model bc the variables are already coded as numbers.
 # 
 
 ### Coercion
-  # So how does R coerce data types? If a character string is present in an atomic vector, R will convert everything else in the vector to character strings. If a vector only contains logicals and numbers, R will convert the logicals to numbers; every TRUE becomes a 1, and every FALSE becomes a 0
+  # So how does R coerce data types? If a character string is present in an atomic vector, R will convert everything else
+  # in the vector to character strings. If a vector only contains logicals and numbers, R will convert the logicals to
+  # numbers; every TRUE becomes a 1, and every FALSE becomes a 0
+
+  # You can convert data's type by using as.functions, such as as.character(1), as.logical(1)
 ### Lists
 ### Data Frames
+
+df <- data.frame(face=c("ace", "two", "six"), suit=c("clubs", "clubs", "clubs"), value=c(1,2,6))
+df
+typeof(df)
+class(df)
+str(df)
+#'data.frame':	3 obs. of  3 variables:
+# $ face : Factor w/ 3 levels "ace","six","two": 1 3 2
+# $ suit : Factor w/ 1 level "clubs": 1 1 1
+# $ value: num  1 2 6
+# R saves the chracter strings (ace, two, six, clubs) as factors, because R like factors!
+# Not good here, but can change by adding the argument, StringsAsFactors=False
+
+df <- data.frame(face=c("ace", "two", "six"), suit=c("clubs", "clubs", "clubs"), value=c(1,2,6), stringsAsFactors = FALSE)
+str(df)
+# 'data.frame':	3 obs. of  3 variables:
+# $ face : chr  "ace" "two" "six"
+# $ suit : chr  "clubs" "clubs" "clubs"
+# $ value: num  1 2 6
+
+
+
 
 
 
