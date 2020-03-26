@@ -129,6 +129,11 @@ str(df)
 # $ suit : chr  "clubs" "clubs" "clubs"
 # $ value: num  1 2 6
 
+getwd()
+# you can change the working directory to any folder with: setwd()
+# setwd("c:/users/zzhan/Documents/Respository_RStudio/testing")
+
+poker <- read.table("poker.csv", sep=",",header=TRUE)
 
 
 
