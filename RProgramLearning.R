@@ -135,6 +135,39 @@ getwd()
 
 poker <- read.table("poker.csv", sep=",",header=TRUE)
 
+# na.strings will convert missing values to NA.
+
+poker <- read.table("poker.csv", sep=",",header=TRUE, na.strings = ".")
+
+# stringasfactors R wants to convert every character string into a factor, so need to use a statement to correct it
+
+poker <- read.table("poker.csv", sep=",",header=TRUE, stringsAsFactors = FALSE)
+
+# If you will be loading more than one data file, you can change the default factoring behavior at global level
+
+options(stringsAsFactors = FALSE)
+
+# Saving data as R files better than plain-text files
+
+a <- 1
+b <- 2
+c <- 3
+save(a, b, c, file = "stuff.RData")
+
+
+library("rJava")
+library("xlsx")
+
+# READING SPREADSHEETS
+# Two-step process
+# 1. Load an excel workbook by loadWorkbook : 
+# 2. Read a spreadsheet from the workbook with readWorksheet
+# Or one step process
+# sheet <- readWorksheetFromfile ("file.xlsx", sheet-1, ...)
+
+# WRITING SPREADSHEET
+# one step process: 
+# writeWorksheetToFile("file.xlxs", data=poker, sheet="sheet1", startRow=1,startCol=1)
 
 
 
