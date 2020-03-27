@@ -169,6 +169,46 @@ library("xlsx")
 # one step process: 
 # writeWorksheetToFile("file.xlxs", data=poker, sheet="sheet1", startRow=1,startCol=1)
 
+###########################################
+# TO SUMMARIZE
+# Data frames store one of the most common forms of data used in data science, tabular data (表数据)
+
+# Chapter Modifying values
+# Make a copy to always have a pristine copy of deck
+# deck2 <- deck
+# 
+# Changing values in place
+# 
+# vec <- c(0,0,0)
+# 
+# vec[1] <- 1000
+# 
+# You can replace multiple values:
+# 
+# vec[c(1,2)] <- c(100,8)
+# vec[1:3] <- c(4,5,6)
+# vec[1:3] <- vec[1:3]+1
+# 
+# You can also create new value:
+# vec[4] <- 2
+# 
+# This provide a great way to add new viriables to datasets:
+# deck2$new <- 1:52
+# 
+# You can also remove columns
+# deck2$new <- NULL
+
+# when you work with logical subsetting, no need to know where in your dataset a value exists.
+# Only need to know how to describe the value with a logical test
+# For example, to assign 14 to ace
+# deck3$value[deck3$face=="ace"] <- 14
+
+# Logical setting is one of the things R does the best!
+# Logical setting is one of the things R does the best!
+# Logical setting is one of the things R does the best!
+
+
+
 
 
 
