@@ -179,21 +179,21 @@ library("xlsx")
 # 
 # Changing values in place
 # 
-# vec <- c(0,0,0)
+vec <- c(0,0,0)
 # 
-# vec[1] <- 1000
+vec[1] <- 1000
 # 
 # You can replace multiple values:
 # 
-# vec[c(1,2)] <- c(100,8)
-# vec[1:3] <- c(4,5,6)
-# vec[1:3] <- vec[1:3]+1
+vec[c(1,2)] <- c(100,8)
+vec[1:3] <- c(4,5,6)
+vec[1:3] <- vec[1:3]+1
 # 
 # You can also create new value:
-# vec[4] <- 2
+vec[4] <- 2
 # 
 # This provide a great way to add new viriables to datasets:
-# deck2$new <- 1:52
+deck2$new <- 1:52
 # 
 # You can also remove columns
 # deck2$new <- NULL
@@ -211,20 +211,20 @@ library("xlsx")
 
 ##################################
 # Boolean Operations
-# a <- c(1,2,3)
-# b <- c(1,2,3)
-# c <- c(1,2,4)
+a <- c(1,2,3)
+b <- c(1,2,3)
+c <- c(1,2,4)
 
-# a==b
-# b==c
-# a==b & b==c
+a==b
+b==c
+a==b & b==c
 
 # Missing Information
 # NA stands for "not available"
 
 # na.rm means NA removal
 
-# payouts <- c("DD"=100, "7"=80, "BBB"=40, "BB"=25, "B"=10, "C"=10,"0"=0)
+payouts <- c("DD"=100, "7"=80, "BBB"=40, "BB"=25, "B"=10, "C"=10,"0"=0)
 
 # Lookup Table vs If Trees
 # As a general rule
@@ -325,3 +325,177 @@ play <- function() {
 # 
 
 ############################################
+# R For Data Science 
+# 
+# Data Visualization
+# 
+# Creating a ggplot
+
+library(ggplot2)
+ggplot(data=mpg) +
+  geom_point(mapping = aes(x=displ,y=hwy))
+
+# ggplot() creates a coordinate system that you can add layers to the first argument is the dataset to use.
+# 
+# ggplot(data=mpg) creates an empty graph.
+# 
+# --> addinng one more layer by geom_point() which create a scatterplot
+# 
+# ggplot comes with many geom functions, each geom function takes a mapping argument which is always paired with aes(), 
+# x and y arguments of aes() specify which variables to map.
+# 
+# Basic struction of ggplot:
+# ggplot(data=<DATA>)+
+#   geom_function(mapping=aes())
+# 
+# aesthetic 美学的 审美的
+
+library(ggplot2)
+ggplot(data=mpg) +
+  geom_point(mapping = aes(x=displ,y=hwy, color=class))
+
+
+# alpha aesthetic controls the transparency of the points.
+
+ggplot(data=mpg) +
+  geom_point(mapping = aes(x=displ,y=hwy, color=class, alpha=class))
+# 
+# Map all the point blue:
+  
+ggplot(data=mpg) +
+  geom_point(mapping = aes(x=displ,y=hwy),color="blue")
+
+# What is gone wrong below?
+ggplot(data=mpg) +
+  geom_point(mapping = aes(x=displ,y=hwy,color="blue"))
+
+# ONe way to add additional variables is with aesthetic 
+# Another way is (particularly useful for categorical variables) to split your plot into facets 
+# Subplots that each disply one subset of the data.
+
+# Facet 小平面
+
+ggplot(data=mpg) +
+  geom_point(mapping = aes(x=displ,y=hwy)) + 
+  facet_wrap(~class, nrow=2)
+
+ggplot(data=mpg) +
+  geom_point(mapping = aes(x=displ,y=hwy)) + 
+  facet_grid(drv~cyl)
+
+
+ggplot(data=mpg) +
+  geom_point(mapping = aes(x=displ,y=hwy)) + 
+  facet_grid(drv~cyl~class)
+
+# face_wrap is to facet plot by a single variable
+# face_grid is to facet plot on the combination of two variables
+
+
+ggplot(data=mpg) +
+  geom_smooth(mapping = aes(x=displ,y=hwy)) 
+
+# A geom is the geometrical object that a plots uses to represent data.
+# Every geom function is ggplot2() takes a mapping argument.
+
+ggplot(data=mpg) +
+  geom_smooth(mapping = aes(x=displ,y=hwy,linetype=drv)) 
+
+
+# Below two codes are the same:
+ggplot(data=mpg) +
+  geom_point(mapping = aes(x=displ,y=hwy)) + 
+  geom_smooth(mapping = aes(x=displ,y=hwy)) 
+  
+ggplot(data=mpg, mapping =aes(x=displ,y=hwy)) +
+  geom_point(mapping = aes(color=class)) +
+  geom_smooth() 
+  
+# Another example:
+
+library(ggplot2) 
+library(dplyr)
+ggplot(data=mpg, mapping =aes(x=displ,y=hwy)) +
+  geom_point(mapping = aes(color=class)) +
+  geom_smooth(data=filter(mpg, class == "subcompact"),se=FALSE) 
+
+# se=FALSE  : Display confidence interval around smooth, TRUE by default
+
+ggplot(data=diamonds)+
+  stat_summary(mapping=aes(x=cut,y=depth),
+               fun.ymin=min,
+               fun.ymax=max,
+               fun.y=median
+               )
+# position adjustments
+diamonds
+ggplot(data=diamonds)+
+  geom_bar(mapping=aes(x=cut))
+
+ggplot(data=diamonds)+
+  geom_bar(mapping=aes(x=cut,color=clarity))
+
+ggplot(data=diamonds)+
+  geom_bar(mapping=aes(x=cut,fill=clarity))
+
+ggplot(data=diamonds)+
+  geom_bar(mapping=aes(x=cut,color=cut))
+
+ggplot(data=diamonds)+
+  geom_bar(mapping=aes(x=cut,fill=cut))
+
+# The stacking is performed automatically by the position adjustment specified by the position argument.
+# If you don't want a stacked bar chart, you can use one of three other options: 
+# "identity", "dodge", or "fill"
+
+# position="identity" will place each object exactly where it falls in the context of the graph.
+
+ggplot(data=diamonds, mapping=aes(x=cut,fill=clarity)) +
+  geom_bar(position="identity")
+
+
+ggplot(data=diamonds, mapping=aes(x=cut,fill=clarity)) +
+  geom_bar(position="dodge")
+
+ggplot(data=diamonds, mapping=aes(x=cut,fill=clarity)) +
+  geom_bar(position="fill")
+
+#################################
+
+# COORDINATE SYSTEMS
+
+# Coordinate systems are probably the most complicated part of ggplot2.
+
+ggplot(data=mpg, mapping=aes(x=class,y=hwy)) +
+  geom_boxplot()
+
+ggplot(data=mpg, mapping=aes(x=class,y=hwy)) +
+  geom_boxplot() +
+  coord_flip()
+
+
+# The layered grammar of graphics
+
+ggplot(data=<DATA>) +
+  <geom_function> (mapping=aes(<Mappings>), stat=<STAT>, position=<POSITION>) +
+  <coordinate_function> +
+  <facet_function>
+  
+#########################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
