@@ -209,6 +209,119 @@ library("xlsx")
 
 
 
+##################################
+# Boolean Operations
+# a <- c(1,2,3)
+# b <- c(1,2,3)
+# c <- c(1,2,4)
+
+# a==b
+# b==c
+# a==b & b==c
+
+# Missing Information
+# NA stands for "not available"
+
+# na.rm means NA removal
+
+# payouts <- c("DD"=100, "7"=80, "BBB"=40, "BB"=25, "B"=10, "C"=10,"0"=0)
+
+# Lookup Table vs If Trees
+# As a general rule
+# Use an if tree if each branch of the tree runs different code.
+# Use a lookup table if each branch of the tree only assigns different values.
+
+##############################################
+# S3 system 
+# S3 refers to a class system built into R, which governs how R handles objects of different classes.
+# S3 system is built around three components: attributes, generic functions and methods
+
+get_symbols <- function() {
+  wheel <- c("DD", "7", "BBB", "BB", "B", "C", "0")
+  sample(wheel, size = 3, replace = TRUE, 
+         prob = c(0.03, 0.03, 0.06, 0.1, 0.25, 0.01, 0.52))
+}
+
+score <- function (symbols) {
+  # identify case
+  same <- symbols[1] == symbols[2] && symbols[2] == symbols[3]
+  bars <- symbols %in% c("B", "BB", "BBB")
+  
+  # get prize
+  if (same) {
+    payouts <- c("DD" = 100, "7" = 80, "BBB" = 40, "BB" = 25, 
+                 "B" = 10, "C" = 10, "0" = 0)
+    prize <- unname(payouts[symbols[1]])
+  } else if (all(bars)) {
+    prize <- 5
+  } else {
+    cherries <- sum(symbols == "C")
+    prize <- c(0, 2, 5)[cherries + 1]
+  }
+  
+  # adjust for diamonds
+  diamonds <- sum(symbols == "DD")
+  prize * 2 ^ diamonds
+}
 
 
+play <- function() {
+  symbols <- get_symbols()
+  print(symbols)
+  score(symbols)
+}
 
+####################################################
+# Unfortunately, loops in R can sometimes be slower than loops in other languanges.
+# Vectorized code, a style of lightening-fast code that takes advantage of all of R's strengths. 
+# Vectorized code, a style of lightening-fast code that takes advantage of all of R's strengths. 
+# Vectorized code, a style of lightening-fast code that takes advantage of all of R's strengths. 
+
+# Vectorized Code
+# The fastest R code takes advantage of three things:
+  # Logical tests + subsetting + element-wise execution
+
+# The fastest R code takes advantage of three things:
+  # Logical tests + subsetting + element-wise execution
+# How to write Vectionized Code 
+# 1. Use vectorized functions to complete the sequential steps in your program
+# 2. Use logical subsetting to handle parallel cases. Try to manipulate every element in a case at once. 
+
+# How to write Fast for Loops in R
+# 1. Do as much as you can outside of the "for" Loops
+# 2. Make sure that any storage objects that you use with the loop are 
+    # large enough to contain all of the results of the loop
+
+# Vectorized Code in Practice
+# The combination of an "if" tree with a "for" loop suggests you can write a pecec of vectorized code that takes many slot
+# combinations and then uses logical subsetting to operate all at once. 
+
+#################################################################
+
+# How to write a reproducible example.
+# You are most likely to get good help with your R problem if you provide a reproducible example. A reproducible example allows someone else to recreate your problem by just copying and pasting R code.
+# 
+# There are four things you need to include to make your example reproducible: required packages, data, code, and a description of your R environment.
+# 
+# Packages should be loaded at the top of the script, so it's easy to see which ones the example needs.
+# 
+# The easiest way to include data in an email is to use dput() to generate the R code to recreate it. For example, to recreate the mtcars dataset in R, I'd perform the following steps:
+#   
+#   Run dput(mtcars) in R
+# Copy the output
+# In my reproducible script, type mtcars <- then paste.
+# Spend a little bit of time ensuring that your code is easy for others to read:
+#   
+#   make sure you've used spaces and your variable names are concise, but informative
+# use comments to indicate where your problem lies
+# do your best to remove everything that is not related to the problem.
+# The shorter your code is, the easier it is to understand.
+# Include the output of sessionInfo() as a comment. This summarises your R environment and makes it easy to check if you're using an out-of-date package.
+# 
+# You can check you have actually made a reproducible example by starting up a fresh R session and pasting your script in.
+# 
+# Before putting all of your code in an email, consider putting it on http://gist.github.com/. It will give your code nice syntax highlighting, and you don't have to worry about anything getting mangled by the email system.
+# 
+# 
+
+############################################
