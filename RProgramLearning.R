@@ -483,19 +483,217 @@ ggplot(data=<DATA>) +
   
 #########################################################
 
+# dplyr basics
+
+# filter, arrange, select, mutate, summarise : These can all be used in conjunction with group_by(). 
+# group_by() which changes the scope of each function from operating on entire dataset to operating on it group_by_group.
+
+# All verbs work:
+# 1. The first argument is data frame
+# 2. The subsequent arguments describe what to do with the data frame, using the variable names (without quotes)
+# 3. The results is a new data frame.
+
+
+library(nycflights13)
+library(knitr)
+library(dplyr)
+library(ggplot2)
+filter(flights,month==1,day==1)
+
+1/49*49==1
+
+near(1/49*49, 1)
+
+nov_dec <- filter(flights,month%in%(c(11,12)))
+
+# De Morgan's law:
+# !(x&y)==!x|!y
+# !(x|y)==!x&!y
+
+NA==NA
+#NA
+
+# Arrange() instead of selecting rows, it changes their order
+
+arr_ymd <- arrange(flights, year, month,day)
+arr_ymd
+arr_ymd <- arrange(flights, year, desc(month),day)
+arr_ymd
+
+# Missing values are always sorted at the end
+
+sele_ymd <- select(flights,year,month,day)
+sele_ymd
+
+sele_ymd <- select(flights,year:day)
+sele_ymd
+
+sele_ymd <- select(flights,-(year:day))
+sele_ymd
+
+# A few useful functions within select():
+start_with("abc")
+ends_with("xyz")
+contains("ijk")
+matches("(.)\\1")
+null_range("x",1:3) matches x1,x2,and x3
+
+tail_num_rename <- rename(flights,tail_num=tailnum)
+tail_num_rename
+flights
+
+select(flights,time_hour,air_time,everything())
+
+# Add new variables with mutate()
+flights_sml <- flights
+flights_sml <- mutate(flights_sml,
+       gain=dep_delay-arr_delay,
+       hours=air_time/60,
+       gain_per_hour=gain/hours
+       )
+
+
+transmute(flights_sml,
+       gain=dep_delay-arr_delay,
+       hours=air_time/60,
+       gain_per_hour=gain/hours
+)
+
+# Useful creation functions:  
+# Arithemetic operators: + - * / ^
+# Modular arithemetic: %/% integer division
+                       %%  remainder  x==y*(x%/%y)+(x%%y)
+  There two can creak integers up into pieces
+# Logs: log() log2() log10()
+  Incredibly useful for data transformation when data ranges across mulitiple orders of magnitudes
+
+# Offset: lead(), lag()
+  x <- 1:10
+  lag(x)
+  lead(x)
+# Cumulative and rolling aggregates
+  cumsum(x)
+  cummean(x)
+# Logical comparisons: < <= > >= !=
+# Ranking: min_rank()
+  y <- c(1,2,2,NA,3,4)
+  min_rank(y)
+  min_rank(desc(y))
+  row_number(y)
+  dense_rank(y)
+  percent_rank(y)
+  cume_dist(y)
+  
+# summarise() collapes a data frame to a single row
+
+by_day <- group_by(flights, year,month, day)
+summarise(by_day,delay=mean(dep_delay,na.rm=TRUE))
+
+# Together group_by() and summarise() provide one of the tools that you use mostly commonly when working with dplyr: grouped summaries.
+x <- c(5,3,8,10,1,4,3)
+lag(x)
+lead(x,3)
+
+# Combining multiple operations with the pipe
+# ctrl+shitf+m is the hotkey of pipe
+# pipe %>% reads like "then"
+# Below are bad code:
+by_dest <- group_by(flights,dest)
+delay <- summarise(by_dest,
+                   count=n(),
+                   dist=mean(distance,na.rm=TRUE),
+                   delay=mean(arr_delay,na.rm=TRUE)
+                   )
+delay <- filter(delay,count>20,dest!="HNL")
+# Below are good code:
+delays <- flights %>% 
+  group_by(dest) %>% 
+  summarise(
+    count=n(),
+    dist=mean(distance,na.rm=TRUE),
+    delay=mean(arr_delay,na.rm=TRUE)
+  ) %>% 
+  filter(count>20,dest !="HNL")
+
+ggplot(data=delay,mapping=aes(x=dist,y=delay))+
+  geom_point(aes(size=count),alpha=1/3)+
+  geom_smooth(se=FALSE)
+
+# Behind the scenes, x %>% f(y) equals f(x,y) 
+                     x %>% f(y) %>% g(z) equals g(f(x,y))
+# Working with the pipe is one of the key criteria for belonging to the tidyverse.
+# The missing values 
+not_cancelled <- flights %>% 
+  filter(!is.na(dep_delay),!is.na(arr_delay))
+
+not_cancelled %>% 
+  group_by(year,month,day) %>% 
+  summarise(mean=mean(dep_delay))
+
+# Always good idea to include a count (n()), or a count of non-missing values (sum(!is.na(x)))
+delays <- not_cancelled %>% 
+  group_by(tailnum) %>% 
+  summarise (delay=mean(arr_delay))
+
+ggplot(data=delays, mapping=aes(x=delay)) +
+  geom_freqpoly(binwidth=1)
+
+# Useful Summary Functions
+# median()
+# sd(x): standard deviation
+# IQR(x): interquarile range
+# mad(x): median absolute deviation (if outlier exists)
+# measures of rank: min() max() quantile(x,0.25)
+# measures of position: first(), nth(x,2), last()
+# counts: n() takes no arguments, it returns the size of the current group
+          sum(!is.na(x)) counts non-missing
+
+          
+# You can optionally provides a weight variable 
+
+# counts and proportions of logical values
+
+############################################################################
+# Visualizing Distributions
+# How to visualise distributions depends on Categorical or Continuous
+# If Categorical: Use a bar chart:
+          # Factors or character vectors
+ggplot(data=diamonds) +
+    geom_bar(mapping=aes(x=cut))
+
+diamonds %>% 
+  count(cut)
+
+# If continuous (any indefinite set of ordered values, such as numbers or date-times): Use a histogram
+
+ggplot(data=diamonds) +
+  geom_histogram(mapping=aes(x=carat),binwidth = 0.01)
+
+smaller <- diamonds  %>% filter(carat<3) 
+       
+ggplot(data=smaller) +
+  geom_histogram(mapping=aes(x=carat),binwidth = 0.1)  
+          
+
+bigger <- diamonds  %>% filter(carat>3) 
+
+ggplot(data=bigger) +
+  geom_histogram(mapping=aes(x=carat),binwidth = 0.02)   
+
+# To overlay multiple histograms in the same plot, use geom_freqploy(), which performs the sam ecalculation as
+# geom_histogram, but instead of using bars to display, uses lines instead.
+
+ggplot(data=smaller, mapping=aes(x=carat,color=cut)) +
+  geom_freqpoly(binwidth=0.1)
+
+#############################################
+# Unusual values: OUTLIERS
+          
+# To see small values:
+ggplot(data=diamonds)+
+  geom_histogram(mapping=aes(x=y),binwidth=0.5)+
+  coord_cartesian(ylim=c(0,50))
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+##############################################
