@@ -943,6 +943,9 @@ str_replace_all(x,c("1"="one","2"="two","3"="three"))
 # If you do have a logical vector, you can use any() or all() to collapse it to a single value.
 
 ###########################################################
+# Data Science
+
+# 
 
 
 
