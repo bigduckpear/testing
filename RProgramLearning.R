@@ -697,3 +697,255 @@ ggplot(data=diamonds)+
 
 
 ##############################################
+# Missing Values
+# WHen encoutering missing value, there are two options:
+# 1. Drop the entire row with string values
+diamonds2 <- diamonds %>% 
+  filter(between(y,3,20))
+
+# 2. Replace with NA
+diamonds2 <- diamonds %>% 
+  mutate(y=ifelse(y<3|y>20,NA,y))
+
+# case_when() is particularly useful inside mutate\
+# case_when() is particularly useful inside mutate
+# case_when() is particularly useful inside mutate
+
+##############################################
+# Wrangle
+# Tibbles: tibble is a modern version of data.frame
+# Creating tibbles
+# Most other R packages use regular data frame, you can coerce a data frame to a tibble, with as.tibble()
+
+as.tibble(iris)
+
+# Or create by tibble()
+
+tibble(
+  x=1:5,
+  y=1,
+  z=x^z+y
+)
+
+# Tibbles vs data.frame
+# Two main differences: Printing and subsetting
+
+# Printing 
+# Tibbles have a refined print method: shows only first 10 rows and all columns fiton screen
+# If you need to print more there are three options:
+# 1.
+nycflights13::flights %>% 
+  print (n=12, width=Inf)
+
+# 2. Control the default print
+# rows
+options(tibble.print_max=50,tibble.print_min=12)
+# col
+options(tibble.width=Inf)
+
+# 3.
+nycflights13::flights %>% 
+  view()
+
+
+# Subsetting
+# If you want to pull out a single variable, you need some new tools $ and [[
+# [[ can extract by name or position 
+# $ only extract by name
+
+# COmpared with a data.frame, tibbles are more strict: they never do partial matching, they generate a warning if 
+# column you are tyring to access does not exist.
+
+# Some oldeter fucntions don't work with tibbles, but you can use as.data.frame() to turn a tibble back to a data.frame.
+
+###############################################################
+# Data Import
+
+# read_csv() is 10 times faster than read.csv
+# parse_*() take a character vector and return a vector of logical,integer, or date.
+
+library(readr)
+library(tidyverse)
+ttt <- parse_logical(c("TRUE","FALSE","NA"))
+ttt
+sum(parse_logical(c("TRUE","FALSE")))
+
+parse_integer(c("1","12",".","2342"),na=".")
+
+parse_double("1,23", locale=locale(decimal_mark=","))
+
+# parse_number(): ignores non-numeric characters before and after the number.
+
+parse_number("$100")
+
+parse_number("$123'4567'89",locale=locale(grouping_mark="'"))
+
+##################################################################
+# Tidy data
+
+# To make a data tidy:
+# 1. Each variable must have its own column
+# 2. Each observation must have its own row
+# 3. Each value must have its own cell
+
+# Practical instruction:
+# 1. put each dataset ina tibble 
+# 2. put each variable in a column
+
+tidya <- table4a %>% 
+  gather('1999','2000',key="year",value="cases")
+tidyb <- table4b %>% 
+  gather('2001','2002',key="year",value="population")
+left_join(tidya,tidyb)
+
+# Inner join
+x <- tribble(
+  ~key,~val_x
+  1,"x1"
+  2,"x2"
+  3,"x3"
+)
+y <- tribble(
+  ~key,~val_y
+  1,"y1"
+  2,"y2"
+  3,"y3"
+)
+
+##################################################
+# Strings
+# "\n" newline
+# "\t" tab
+
+str_length(c("a",NA))
+
+str_length(c("adfadf",NA))
+
+# to combine two or more strings, use str_c()
+str_c("x","y")
+
+# use sep argument to control
+str_c("x","y",sep=",")
+
+x <- c("abc",NA)
+str_c("1-",x,"-1")
+
+str_c("prefix-",c("a","b","c"),"-suffix")
+
+
+str_c(c("x","y","z"),collapse=",")
+
+x <- c("Apple","Banana","Pear")
+str_sub(x,1,3)
+
+str_sub(x,-3,-1)
+
+str_sub(x,-3,0)
+
+str_sub(x,-3,-2)
+
+# Can also modify
+str_sub(x,1,1) <- str_to_lower(str_sub(x,1,1))
+
+#########################################################
+# Matching Patterns with regular expressions
+
+library(stringi)
+library(twitteR)
+library(ROAuth)
+library(httr)
+library(plyr)
+library(stringr)
+# Simplest patterns match exact strings
+x <- c("apple","banana")
+str_view(x,"an")
+
+# Next step up in complexity is ., which matches any character.
+
+str_view(x,".a.")
+
+x <- "a\\b"
+writeLines((x))
+
+str_view(x,"\\\\")
+
+x <- c("apple","banana")
+# ^ to match the start of the string
+# $ to match the end of the string
+str_view(x,"^a")
+str_view(x,"a$")
+
+\d matches any digit
+\s matches any whitespace
+[abc] matches a,b,c
+[^abc] matches anything except a,b, or c
+
+fruit <- c("banana","coconut","cucumber")
+str_view(fruit,"(..)\\1",match=TRUE)
+str_view(fruit,"(.)\\1",match=TRUE)
+
+x <- c("apple","banana","pear")
+str_detect(x,"e")
+
+# A common use of str_detect() is to select the elements that match a pattern.
+words[str_detect(words,"x$")]
+words
+str <- subset(words,"x$")
+typeof(words)
+class(words)
+
+library(dplyr)
+df %>% 
+  mutate(
+    vowels = str_count(word,"[aeiou]"),
+    consonants=str_count(word,"[^aeiou]")
+         )
+
+df %>% 
+  mutate(
+    vowels = str_count(word,"[aeiou]"),
+    consonants = str_count(word, "[^aeiou]")
+  )
+
+has_color <- str_subset(sentences,color_match)
+matches <- str_extract(has_color,color_match)
+
+# str_match() only extracts the first match, to get all matches, use str_extract_all()
+# If you use simplify=TRUE, str_extract_all will return a matrix with short matches expanded to the same length as the longest.
+
+noun <- "(a|the)([^ ]+)"
+
+has_noun <- sentences %>% 
+  str_subset(noun) %>% 
+  head(10)
+
+has_noun %>% 
+  str_extract(noun)
+
+# Replacing matches
+
+x <- c("1 house","2 cars","3 people")
+str_replace_all(x,c("1"="one","2"="two","3"="three"))
+
+# stringr(46 functions) is built on top of the stringi(234 functions) package.
+
+######################################################
+
+# You should consider writing a function whnever you have copied and pasted a block of code more than twice.
+# To write a function, you need to first analyze the code:
+   # how many inputs does it have?
+# There are three key steps to create a new function
+  # pick a name for the function
+  # list the inputs, or arguments, to the function inside function()
+  # You place the code in the body of the function
+
+# You should never use | or & in a if statement: they are vectorized operations that apply to multiple values.
+# If you do have a logical vector, you can use any() or all() to collapse it to a single value.
+
+###########################################################
+
+
+
+
+
+
